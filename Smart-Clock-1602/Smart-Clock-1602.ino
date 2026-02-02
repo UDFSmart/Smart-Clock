@@ -17,8 +17,7 @@
  */
 
 #include <WiFiManager.h>
-// #include <ESP8266WiFi.h>
-// #include <ESP8266HTTPClient.h>
+#include <LiquidCrystal_I2C.h>
 
 #include "config.h"
 

@@ -22,6 +22,8 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
+#include <time.h>
+
 // COMMAND LIST
 #define COMMAND_RELAY_ON "RELAY_ON"
 #define COMMAND_RELAY_OFF "RELAY_OFF"
