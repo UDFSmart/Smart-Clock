@@ -20,6 +20,9 @@
 
 #include <Arduino.h>
 
+#include <esp_system.h>
+#include <nvs_flash.h>
+
 #define COMMAND_RESULT_SIZE 128
 
 #define RELAY_PIN_PARAM "0"
@@ -79,15 +82,13 @@ static void cmdHardReset(char* result, size_t resultSize, const char* param, Com
     callback(COMMAND_HARDRESET, param, "Device: rebooted!");
   }
 
-  // yield();
-  // delay(500);
+  delay(200);
 
-  // WiFi.disconnect(true);
-  // delay(200);
-  // ESP.eraseConfig();
-  // delay(300);
+  nvs_flash_erase();   // стереть NVS (Wi-Fi, настройки)
+  nvs_flash_init();
 
-  // ESP.restart();
+  delay(200);
+  esp_restart();
 }
 
 static void execAndCallback(
@@ -143,4 +144,11 @@ void commands_setReboot(const char* param, CommandFunctionCallback callback) {
 void commands_setHardReset(const char* param, CommandFunctionCallback callback) {
   char result[COMMAND_RESULT_SIZE] = { 0 };
   cmdHardReset(result, COMMAND_RESULT_SIZE, param, callback);
+}
+
+void commands_updateTime(const char* param, CommandFunctionCallback callback) {
+  
+  if (callback) {
+    callback(COMMAND_UPDATE_TIME, param, "The time has been updated!");
+  }
 }

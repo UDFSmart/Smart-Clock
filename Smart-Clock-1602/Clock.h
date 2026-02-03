@@ -1,5 +1,5 @@
 /*
- *    Copyright 2025 UDFOwner
+ *    Copyright 2026 UDFOwner
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,13 +17,30 @@
  */
 
 #pragma once
+#include <Arduino.h>
+#include <time.h>
 
-#define DEVICE_ID "xxxx-xxxx-xxxx-xxxx" // YOUR DEVICE ID, to get it write to us: support@udfsoft.com
+class Clock {
+public:
+  Clock();
 
-#define DEVICE_TYPE "clock" // type of your device
-#define DEVICE_CONTROLLER_TYPE "esp32-c3" // type of your device
+  // set time from epoch (1970)
+  void setEpoch(time_t epoch);
 
+  void update();
 
-#define API_KEY "xxxxxxxxxxxxxxxxxxxxx"  // YOUR API Key, to get it write to us: support@udfsoft.com
+  // getters
+  int hour() const;
+  int minute() const;
+  int second() const;
 
-#define APP_VERSION "1"
+  int day() const;
+  int month() const;
+  int year() const;
+
+  String timeStr(const char* format = "%02d:%02d:%02d") const;  // HH:MM:SS
+  String dateStr(const char* format = "%02d.%02d.%04d") const;  // DD.MM.YYYY
+
+private:
+  struct tm _timeinfo;
+};

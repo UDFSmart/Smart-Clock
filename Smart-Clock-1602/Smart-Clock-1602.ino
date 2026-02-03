@@ -18,13 +18,15 @@
 
 #include <WiFiManager.h>
 #include <LiquidCrystal_I2C.h>
+#include <Wire.h>
 
 #include "config.h"
 
 #include "network_utils.h"
 #include "string_utils.h"
-
 #include "command_executor.h"
+
+#include "Clock.h"
 
 #define BASE_URL "https://smart.udfsoft.com/api/v1/devices/commands"
 #define GET_COMMAND_URL BASE_URL
@@ -41,8 +43,24 @@ unsigned long lastPoll = 0;
 
 unsigned long pollInterval = DEFAULT_POLL_INTERVAL;
 
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+Clock rtc;
+
 void setup() {
   Serial.begin(115200);
+
+  Wire.begin(4, 5);
+  lcd.init();
+  lcd.backlight();
+
+  drawText("Hello!", 0, 0, 1000);
+  drawText("This is your...", 0, 0, 1000);
+  drawText("smartclock", 0, 0, 2000);
+
+
+  //   // пример: получили epoch с бэка
+  //   time_t backendEpoch = 1706870400;
+  //   rtc.setEpoch(backendEpoch);
 
   setupWifi();
 
@@ -52,14 +70,23 @@ void setup() {
 void setupWifi() {
   WiFiManager wm;
 
+  drawText("WiFi Connecting", 0, 0);
+
   wm.setConnectTimeout(120);  // 2 mins
   wm.setConfigPortalTimeout(300);
 
   // If the connection fails, the configurator will start
-  if (!wm.autoConnect("SMART_ESP_AP", "12345678")) {
+  if (!wm.autoConnect("SMART_CLOCK_AP", "12345678")) {
+
     Serial.println("Failed to connect, rebooting...");
+    drawText("Failed to connect", 0, 0, 2000);
+    drawText("rebooting...", 0, 0, 1000);
+
     ESP.restart();
   }
+
+  drawText("WiFi Connected!", 0, 0, 1000);
+  drawText(WiFi.localIP().toString().c_str(), 0, 0, 2000);
 
   Serial.println("Connected to WiFi!");
   Serial.print("IP: ");
@@ -67,6 +94,9 @@ void setupWifi() {
 }
 
 void loop() {
+  // current time
+  rtc.update();
+
   if (millis() - lastPoll >= pollInterval) {
     lastPoll = millis();
     pollServer();
@@ -172,3 +202,44 @@ void sendResult(const char* cmd, const char* param, const char* status) {
   Serial.print("returned Code: ");
   Serial.println(code);
 }
+
+void drawText(const char* text, uint8_t col, uint8_t row) {
+  lcd.print("                ");
+  delay(200);
+  lcd.setCursor(col, row);
+  lcd.print(text);
+}
+
+void drawText(const char* text, uint8_t col, uint8_t row, unsigned long delayMsec) {
+  drawText(text, col, row);
+  delay(delayMsec);
+}
+
+// #include <Wire.h>
+// #include <LiquidCrystal_I2C.h>
+// #include "Clock.h"
+
+// LiquidCrystal_I2C lcd(0x27, 16, 2);
+// Clock rtc;
+
+// void setup() {
+//   Wire.begin(4, 5);
+//   lcd.init();
+//   lcd.backlight();
+
+//   // пример: получили epoch с бэка
+//   time_t backendEpoch = 1706870400;
+//   rtc.setEpoch(backendEpoch);
+// }
+
+// void loop() {
+//   rtc.update();
+
+//   lcd.setCursor(0, 0);
+//   lcd.print(rtc.timeStr());
+
+//   lcd.setCursor(0, 1);
+//   lcd.print(rtc.dateStr());
+
+//   delay(1000);
+// }

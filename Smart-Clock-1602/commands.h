@@ -35,6 +35,8 @@
 
 #define COMMAND_HARDRESET "HARDRESET"
 #define COMMAND_REBOOT "REBOOT"
+
+#define COMMAND_UPDATE_TIME "UPDATE_TIME"
 // End COMMAND LIST
 
 using CommandFunctionCallback = void (*)(const char* cmd, const char* param, const char* status);
@@ -54,3 +56,5 @@ void commands_setStatus(const char* param, CommandFunctionCallback callback);
 void commands_setReboot(const char* param, CommandFunctionCallback callback);
 
 void commands_setHardReset(const char* param, CommandFunctionCallback callback);
+
+void commands_updateTime(const char* param, CommandFunctionCallback callback);

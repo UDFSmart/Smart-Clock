@@ -99,6 +99,8 @@ void setBaseHeaders(HTTPClient& http) {
   http.addHeader("X-DEVICE-ID", DEVICE_ID);
   http.addHeader("X-DEVICE-TYPE", DEVICE_TYPE);
 
+  http.addHeader("X-DEVICE-CONTROLLER-TYPE", DEVICE_CONTROLLER_TYPE);
+
   // http.addHeader("X-CHIP-ID", String(ESP.getChipId()));
 
   uint64_t chipid = ESP.getEfuseMac();
