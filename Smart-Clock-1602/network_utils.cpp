@@ -44,7 +44,6 @@ int processHttpRequest(
   http.setReuse(true);
 
   setBaseHeaders(http);
-
   for (size_t i = 0; i < headersCount; i++) {
     http.addHeader(extraHeaders[i].name, extraHeaders[i].value);
   }
@@ -53,17 +52,17 @@ int processHttpRequest(
     http.collectHeaders(collectHeaders, collectHeadersCount);
 
   int code = -1;
-  Serial.println("===== Start Request ====");
-  Serial.print(method);
-  Serial.print(" ");
-  Serial.println(url);
+
+  log_d("===== Start Request ====");
+  log_d("%s %s", method, url);
+
   if (strcmp(method, "POST") == 0) {
     code = http.POST(body ? *body : "");
   } else {
     code = http.GET();
   }
-  Serial.println("===== End Request ====");
-  Serial.println();
+  log_d("===== End Request ====");
+  log_d("");
 
   int responseHeadersCount = http.headers();
 
@@ -101,8 +100,6 @@ void setBaseHeaders(HTTPClient& http) {
 
   http.addHeader("X-DEVICE-CONTROLLER-TYPE", DEVICE_CONTROLLER_TYPE);
 
-  // http.addHeader("X-CHIP-ID", String(ESP.getChipId()));
-
   uint64_t chipid = ESP.getEfuseMac();
   char chipIdStr[17];
   snprintf(chipIdStr, sizeof(chipIdStr), "%08X", (uint32_t)(chipid >> 32));
@@ -137,13 +134,10 @@ void setBaseHeaders(HTTPClient& http) {
 void printResponseHeaders(HTTPClient& http) {
   int count = http.headers();
 
-  Serial.print("Headers count: ");
-  Serial.println(count);
+  log_d("Headers count: %d", count);
 
   for (int i = 0; i < count; i++) {
-    Serial.print(http.headerName(i));
-    Serial.print(": ");
-    Serial.println(http.header(i));
+    log_d("%s: %s", http.headerName(i).c_str(), http.header(i).c_str());
   }
 }
 
@@ -152,4 +146,28 @@ void network_SetHeader(HttpHeader& header, const char* name, const char* value) 
 
   strlcpy(header.name, name, sizeof(header.name));
   strlcpy(header.value, value == NULL ? "" : value, sizeof(header.value));
+}
+
+void setupWifi(LiquidCrystal_I2C& lcd) {
+  WiFiManager wm;
+
+  drawText(lcd, "WiFi Connecting", 0, 0);
+
+  wm.setConnectTimeout(120);  // 2 mins
+  wm.setConfigPortalTimeout(300);
+
+  // If the connection fails, the configurator will start
+  if (!wm.autoConnect("SMART_CLOCK_AP", "12345678")) {
+
+    log_i("Failed to connect, rebooting...");
+    drawText(lcd, "Failed to connect", 0, 0);
+    drawText(lcd, "rebooting...", 0, 0, 2000);
+
+    ESP.restart();
+  }
+
+  drawText(lcd, "WiFi Connected!", 0, 0);
+  drawText(lcd, WiFi.localIP().toString().c_str(), 0, 1, 2000);
+
+  log_i("Connected to WiFi!/nIP: %s", WiFi.localIP().toString().c_str());
 }

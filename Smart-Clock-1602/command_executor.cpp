@@ -30,10 +30,17 @@ static Command commands[] = {
   { COMMAND_HARDRESET, commands_setHardReset },
 };
 
+unsigned long lastPoll = 0;
 
-void command_executor_execute(const char *cmd, const char *param, CommandFunctionCallback function) {
+unsigned long pollInterval = DEFAULT_POLL_INTERVAL;
+
+static OnResultCommandFunction globalOnResult = nullptr;
+
+static void handleCommandResult(const char* cmd, const char* param, const char* status);
+
+void command_executor_execute(const char* cmd, const char* param, CommandFunctionCallback function) {
   if (!cmd || strlen(cmd) == 0) {
-    Serial.println("No command received");
+    log_i("No command received");
     return;
   }
 
@@ -46,6 +53,46 @@ void command_executor_execute(const char *cmd, const char *param, CommandFunctio
       return;
     }
   }
-  
+
   if (function) function(cmd, param, "Unknown command");
+}
+
+void command_executor_handleCommandRequest(const HttpHeader* headers, size_t headersCount, OnResultCommandFunction onResultFunc) {
+  char cmd[32] = { 0 };
+  char param[32] = { 0 };
+
+  for (size_t i = 0; i < headersCount; i++) {
+    const char* name = headers[i].name;
+
+    if (strcmp(name, X_CMD) == 0) {  // if name == X_CMD
+      const char* value = headers[i].value;
+      strlcpy(cmd, value, sizeof(cmd));
+    } else if (strcmp(name, X_CMD_PARAM) == 0) {  // if name == X_CMD_PARAM
+      strlcpy(param, headers[i].value, sizeof(param));
+    } else if (strcmp(name, X_POLL_INTERVAL) == 0) {  // if name == X_POLL_INTERVAL
+      pollInterval = atoi(headers[i].value);
+      if (pollInterval <= 1000) pollInterval = DEFAULT_POLL_INTERVAL;
+    }
+  }
+
+  log_i("command: %s; Param: %s", cmd, param);
+  log_i("pollInterval: %lu", pollInterval);
+
+  globalOnResult = onResultFunc;
+
+  command_executor_execute(cmd, param, handleCommandResult);
+}
+
+static void handleCommandResult(const char* cmd, const char* param, const char* status) {
+  if (strcmp(cmd, COMMAND_HARDRESET) == 0) {
+    log_i("Smart device: RESET!");
+    Serial.flush();
+  } else {
+    log_i("command: %s; Param: %s; Status: %s\n", cmd, param, status);
+  }
+
+  delay(100);
+
+  if (globalOnResult)
+    globalOnResult(cmd, param, status);  // sendResult(cmd, param, status);
 }

@@ -18,6 +18,9 @@
 
 #pragma once
 #include "commands.h"
+#include "network_utils.h"
+
+using OnResultCommandFunction = void (*)(const char* cmd, const char* param, const char* status);
 
 using CommandFunction = void (*)(const char *param, CommandFunctionCallback callback);
 
@@ -26,5 +29,11 @@ struct Command {
   CommandFunction function;
 };
 
+const unsigned long DEFAULT_POLL_INTERVAL = 15000;
+
+extern unsigned long lastPoll;
+extern unsigned long pollInterval;
 
 void command_executor_execute(const char *cmd, const char *param, CommandFunctionCallback function);
+
+void command_executor_handleCommandRequest(const HttpHeader* headers, size_t headersCount, OnResultCommandFunction onResultFunc);

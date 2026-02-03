@@ -16,9 +16,7 @@
  *    More details: https://udfsoft.com/
  */
 
-#include <WiFiManager.h>
-#include <LiquidCrystal_I2C.h>
-#include <Wire.h>
+#include "lcd_utils.h"
 
 #include "config.h"
 
@@ -31,18 +29,6 @@
 #define BASE_URL "https://smart.udfsoft.com/api/v1/devices/commands"
 #define GET_COMMAND_URL BASE_URL
 
-// HEADERS NAMES
-#define X_POLL_INTERVAL "X-POLL-INTERVAL"
-#define X_CMD "X-CMD"
-#define X_CMD_PARAM "X-CMD-PARAM"
-#define X_CMD_STATUS "X-CMD-STATUS"
-
-const unsigned long DEFAULT_POLL_INTERVAL = 15000;
-
-unsigned long lastPoll = 0;
-
-unsigned long pollInterval = DEFAULT_POLL_INTERVAL;
-
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 Clock rtc;
 
@@ -53,49 +39,38 @@ void setup() {
   lcd.init();
   lcd.backlight();
 
-  drawText("Hello!", 0, 0, 1000);
-  drawText("This is your...", 0, 0, 1000);
-  drawText("smartclock", 0, 0, 2000);
+  drawText(lcd, "Hello!", 0, 0, 2000);
+  drawText(lcd, "This is your", 0, 0);
+  drawText(lcd, "Smartclock", 0, 1, 3000);
 
-
-  //   // пример: получили epoch с бэка
-  //   time_t backendEpoch = 1706870400;
-  //   rtc.setEpoch(backendEpoch);
-
-  setupWifi();
+  setupWifi(lcd);
 
   initHttpRequest();
-}
 
-void setupWifi() {
-  WiFiManager wm;
+  configTime(2 * 3600, 0, "pool.ntp.org", "time.nist.gov");
 
-  drawText("WiFi Connecting", 0, 0);
+  drawText(lcd, "Updating time", 0, 0);
 
-  wm.setConnectTimeout(120);  // 2 mins
-  wm.setConfigPortalTimeout(300);
-
-  // If the connection fails, the configurator will start
-  if (!wm.autoConnect("SMART_CLOCK_AP", "12345678")) {
-
-    Serial.println("Failed to connect, rebooting...");
-    drawText("Failed to connect", 0, 0, 2000);
-    drawText("rebooting...", 0, 0, 1000);
-
-    ESP.restart();
+  struct tm timeinfo;
+  while (!getLocalTime(&timeinfo)) {
+    delay(500);
   }
 
-  drawText("WiFi Connected!", 0, 0, 1000);
-  drawText(WiFi.localIP().toString().c_str(), 0, 0, 2000);
-
-  Serial.println("Connected to WiFi!");
-  Serial.print("IP: ");
-  Serial.println(WiFi.localIP());
+  lcd.clear();
 }
 
 void loop() {
-  // current time
-  rtc.update();
+
+  static unsigned long lastDisplayUpdateMs = 0;
+
+  if (millis() - lastDisplayUpdateMs >= 1000) {
+    lastDisplayUpdateMs = millis();
+
+    rtc.update();  // calculate time
+
+    drawText(lcd, rtc.dateStr("%02d.%02d.%04d"), 3, 0);  // date
+    drawText(lcd, rtc.timeStr("%02d:%02d:%02d"), 4, 1);  // time
+  }
 
   if (millis() - lastPoll >= pollInterval) {
     lastPoll = millis();
@@ -105,7 +80,8 @@ void loop() {
 
 void pollServer() {
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Reconnecting WiFi...");
+    log_i("Reconnecting WiFi...");
+    drawText(lcd, "Reconnecting...", 0, 0, 1000);
     WiFi.reconnect();
     return;
   }
@@ -117,65 +93,27 @@ void pollServer() {
   };
 
   processHttpRequest(GET_COMMAND_URL, "GET", nullptr, nullptr, 0, collectHeaders, 3, 15000, [](int code, const HttpHeader* headers, size_t count) {
-    Serial.print("HTTPS Response code: ");
-    Serial.println(code);
+    log_i("HTTPS Response code: %u", code);
 
     switch (code) {
       case HTTP_CODE_NO_CONTENT:
-        handleCommand(headers, count);
+        command_executor_handleCommandRequest(headers, count, sendResult);
         break;
       case HTTP_CODE_NOT_FOUND:
-        Serial.println("No command");
+        log_i("No command");
         break;
       case HTTP_CODE_FORBIDDEN:
-        Serial.println("Access Forbidden! DEVICE_ID not found or API_KEY not valid");
+        log_e("Access Forbidden! DEVICE_ID not found or API_KEY not valid");
         break;
       default:
-        Serial.print("Unexpected code: ");
-        Serial.println(code);
+        log_e("Unexpected code: %d", code);
     }
-  });
-}
-
-void handleCommand(const HttpHeader* headers, size_t headersCount) {
-  char cmd[32] = { 0 };
-  char param[32] = { 0 };
-
-  for (size_t i = 0; i < headersCount; i++) {
-    const char* name = headers[i].name;
-
-    if (strcmp(name, X_CMD) == 0) {  // if name == X_CMD
-      const char* value = headers[i].value;
-      strlcpy(cmd, value, sizeof(cmd));
-    } else if (strcmp(name, X_CMD_PARAM) == 0) {  // if name == X_CMD_PARAM
-      strlcpy(param, headers[i].value, sizeof(param));
-    } else if (strcmp(name, X_POLL_INTERVAL) == 0) {  // if name == X_POLL_INTERVAL
-      pollInterval = atoi(headers[i].value);
-      if (pollInterval <= 1000) pollInterval = DEFAULT_POLL_INTERVAL;
-    }
-  }
-
-  Serial.printf("command: %s; Param: %s; Status: %s\n", cmd, param);
-  Serial.print("pollInterval: ");
-  Serial.println(pollInterval);
-
-  command_executor_execute(cmd, param, [](const char* cmd, const char* param, const char* status) {
-    if (strcmp(cmd, COMMAND_HARDRESET) == 0) {
-      Serial.println("Smart device: RESET!");
-      Serial.flush();
-    } else {
-      Serial.printf("command: %s; Param: %s; Status: %s\n", cmd, param, status);
-    }
-
-    delay(100);
-
-    sendResult(cmd, param, status);
   });
 }
 
 void sendResult(const char* cmd, const char* param, const char* status) {
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("sendResult: WiFi.status() != WL_CONNECTED");
+    log_i("sendResult: WiFi.status() != WL_CONNECTED");
     return;
   }
 
@@ -199,47 +137,6 @@ void sendResult(const char* cmd, const char* param, const char* status) {
   sanitizePath(postCommandUrl);
 
   int code = processHttpRequest(postCommandUrl, "POST", nullptr, headers, HEADERS_COUNT);
-  Serial.print("returned Code: ");
-  Serial.println(code);
+
+  log_i("returned Code: %d", code);
 }
-
-void drawText(const char* text, uint8_t col, uint8_t row) {
-  lcd.print("                ");
-  delay(200);
-  lcd.setCursor(col, row);
-  lcd.print(text);
-}
-
-void drawText(const char* text, uint8_t col, uint8_t row, unsigned long delayMsec) {
-  drawText(text, col, row);
-  delay(delayMsec);
-}
-
-// #include <Wire.h>
-// #include <LiquidCrystal_I2C.h>
-// #include "Clock.h"
-
-// LiquidCrystal_I2C lcd(0x27, 16, 2);
-// Clock rtc;
-
-// void setup() {
-//   Wire.begin(4, 5);
-//   lcd.init();
-//   lcd.backlight();
-
-//   // пример: получили epoch с бэка
-//   time_t backendEpoch = 1706870400;
-//   rtc.setEpoch(backendEpoch);
-// }
-
-// void loop() {
-//   rtc.update();
-
-//   lcd.setCursor(0, 0);
-//   lcd.print(rtc.timeStr());
-
-//   lcd.setCursor(0, 1);
-//   lcd.print(rtc.dateStr());
-
-//   delay(1000);
-// }

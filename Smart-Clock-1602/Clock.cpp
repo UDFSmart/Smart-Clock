@@ -56,13 +56,13 @@ int Clock::year() const {
 }
 
 String Clock::timeStr(const char* format) const {
-  char buf[9];
+  char buf[16];
   snprintf(buf, sizeof(buf), format, hour(), minute(), second());
   return String(buf);
 }
 
 String Clock::dateStr(const char* format) const {
-  char buf[11];
+  char buf[16];
   snprintf(buf, sizeof(buf), format, day(), month(), year());
   return String(buf);
 }

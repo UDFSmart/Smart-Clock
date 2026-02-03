@@ -17,17 +17,24 @@
  */
 
 #pragma once
-// #include <ESP8266WiFi.h>
-// #include <ESP8266HTTPClient.h>
 
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 
+#include <WiFiManager.h>
+
 #include "config.h"
+#include "lcd_utils.h"
 
 #define HEADER_NAME_LEN 32
 #define HEADER_VALUE_LEN 64
+
+// HEADERS NAMES
+#define X_POLL_INTERVAL "X-POLL-INTERVAL"
+#define X_CMD "X-CMD"
+#define X_CMD_PARAM "X-CMD-PARAM"
+#define X_CMD_STATUS "X-CMD-STATUS"
 
 struct HttpHeader {
   char name[HEADER_NAME_LEN];
@@ -54,3 +61,5 @@ void setBaseHeaders(HTTPClient& http);
 void printResponseHeaders(HTTPClient& http);
 
 void network_SetHeader(HttpHeader& header, const char* name, const char* value);
+
+void setupWifi(LiquidCrystal_I2C &lcd);
