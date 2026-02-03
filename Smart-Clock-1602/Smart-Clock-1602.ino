@@ -47,14 +47,17 @@ void setup() {
 
   initHttpRequest();
 
-  configTime(2 * 3600, 0, "pool.ntp.org", "time.nist.gov");
+  // configTime(0,  // 2 * 3600,
+  //            0,
+  //            "pool.ntp.org",
+  //            "time.nist.gov");
 
-  drawText(lcd, "Updating time", 0, 0);
+  // drawText(lcd, "Updating time", 0, 0);
 
-  struct tm timeinfo;
-  while (!getLocalTime(&timeinfo)) {
-    delay(500);
-  }
+  // struct tm timeinfo;
+  // while (!getLocalTime(&timeinfo)) {
+  //   delay(500);
+  // }
 
   lcd.clear();
 }
@@ -97,7 +100,7 @@ void pollServer() {
 
     switch (code) {
       case HTTP_CODE_NO_CONTENT:
-        command_executor_handleCommandRequest(headers, count, sendResult);
+        command_executor_handleCommandRequest(headers, count, sendCommandResult);
         break;
       case HTTP_CODE_NOT_FOUND:
         log_i("No command");
@@ -111,7 +114,7 @@ void pollServer() {
   });
 }
 
-void sendResult(const char* cmd, const char* param, const char* status) {
+void sendCommandResult(const char* cmd, const char* param, const char* status) {
   if (WiFi.status() != WL_CONNECTED) {
     log_i("sendResult: WiFi.status() != WL_CONNECTED");
     return;

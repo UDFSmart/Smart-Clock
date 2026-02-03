@@ -1,3 +1,4 @@
+#include "commands.h"
 /*
  *    Copyright 2026 UDFOwner
  *
@@ -28,6 +29,7 @@ static Command commands[] = {
   { COMMAND_PIN_WATCH, commands_setStatus },
   { COMMAND_REBOOT, commands_setReboot },
   { COMMAND_HARDRESET, commands_setHardReset },
+  { COMMAND_UPDATE_TIME, commands_updateTime}
 };
 
 unsigned long lastPoll = 0;

@@ -129,6 +129,10 @@ void setBaseHeaders(HTTPClient& http) {
 
   snprintf(buf, sizeof(buf), "%u", ESP.getFlashChipSize());
   http.addHeader("X-FLASH-SIZE", buf);
+
+  time_t now = time(nullptr);
+  snprintf(buf, sizeof(buf), "%ld", (long)now);
+  http.addHeader("X-DEVICE-TIME", buf);
 }
 
 void printResponseHeaders(HTTPClient& http) {

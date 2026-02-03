@@ -20,11 +20,10 @@
 
 #define DEVICE_ID "xxxx-xxxx-xxxx-xxxx" // YOUR DEVICE ID, to get it write to us: support@udfsoft.com
 
-#define DEVICE_TYPE "clock" // type of your device
-#define DEVICE_CONTROLLER_TYPE "esp32-c3" // type of your device
+#define DEVICE_TYPE "clock"                // type of your device
+#define DEVICE_CONTROLLER_TYPE "esp32-c3"  // type of your device
 
 
 #define API_KEY "xxxxxxxxxxxxxxxxxxxxx"  // YOUR API Key, to get it write to us: support@udfsoft.com
 
 #define APP_VERSION "1"
-

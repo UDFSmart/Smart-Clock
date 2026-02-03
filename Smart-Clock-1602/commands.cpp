@@ -84,7 +84,7 @@ static void cmdHardReset(char* result, size_t resultSize, const char* param, Com
 
   delay(200);
 
-  nvs_flash_erase();   // стереть NVS (Wi-Fi, настройки)
+  nvs_flash_erase();  // стереть NVS (Wi-Fi, настройки)
   nvs_flash_init();
 
   delay(200);
@@ -147,8 +147,45 @@ void commands_setHardReset(const char* param, CommandFunctionCallback callback) 
 }
 
 void commands_updateTime(const char* param, CommandFunctionCallback callback) {
-  
-  if (callback) {
-    callback(COMMAND_UPDATE_TIME, param, "The time has been updated!");
+
+  // configTime(0, 0, "pool.ntp.org", "time.nist.gov");
+
+  // struct tm timeinfo;
+  // while (!getLocalTime(&timeinfo)) {
+  //   delay(500);
+  // }
+
+  // time_t timestamp = (time_t)atoll(param);
+
+  // struct timeval tv;
+  // tv.tv_sec = timestamp;
+  // tv.tv_usec = 0;
+  // settimeofday(&tv, nullptr);
+
+  // if (callback) {
+  //   callback(COMMAND_UPDATE_TIME, param, "The time has been updated!");
+  // }
+
+  if (param == nullptr || strlen(param) < 10) {
+    if (callback) callback(COMMAND_UPDATE_TIME, param, "Error: Invalid timestamp");
+    return;
   }
+
+  time_t timestamp = (time_t)atoll(param);
+
+  struct timeval tv;
+  tv.tv_sec = timestamp;
+  tv.tv_usec = 0;
+  
+  if (settimeofday(&tv, nullptr) == 0) {
+    tzset(); // Обновляем локальное окружение
+    log_i("System time updated to: %lld", (long long)timestamp);
+    
+    if (callback) {
+      callback(COMMAND_UPDATE_TIME, param, "The time has been updated!");
+    }
+  } else {
+    if (callback) callback(COMMAND_UPDATE_TIME, param, "Error: System failed to set time");
+  }
+
 }
