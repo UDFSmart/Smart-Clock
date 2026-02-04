@@ -22,11 +22,6 @@
 #include "command_executor.h"
 
 static Command commands[] = {
-  { COMMAND_PIN_ON, commands_setPinOn },
-  { COMMAND_PIN_OFF, commands_setPinOff },
-  { COMMAND_RELAY_ON, commands_setRelayOn },
-  { COMMAND_RELAY_OFF, commands_setRelayOff },
-  { COMMAND_PIN_WATCH, commands_setStatus },
   { COMMAND_REBOOT, commands_setReboot },
   { COMMAND_HARDRESET, commands_setHardReset },
   { COMMAND_UPDATE_TIME, commands_updateTime },

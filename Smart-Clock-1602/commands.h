@@ -25,14 +25,6 @@
 #include <time.h>
 
 // COMMAND LIST
-#define COMMAND_RELAY_ON "RELAY_ON"
-#define COMMAND_RELAY_OFF "RELAY_OFF"
-
-#define COMMAND_PIN_ON "ON"
-#define COMMAND_PIN_OFF "OFF"
-
-#define COMMAND_PIN_WATCH "STATUS"
-
 #define COMMAND_HARDRESET "HARDRESET"
 #define COMMAND_REBOOT "REBOOT"
 
@@ -52,9 +44,6 @@ void commands_setPinState(char* result, size_t resultSize, const char* param, in
 
 void commands_setPinOn(const char* param, CommandFunctionCallback callback);
 void commands_setPinOff(const char* param, CommandFunctionCallback callback);
-
-void commands_setRelayOn(const char* param, CommandFunctionCallback callback);
-void commands_setRelayOff(const char* param, CommandFunctionCallback callback);
 
 void commands_setStatus(const char* param, CommandFunctionCallback callback);
 

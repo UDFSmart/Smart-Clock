@@ -64,7 +64,7 @@ void loop() {
     if ((long)(endCommandMessageShowing - currentMillis) > 0) {
       drawText(lcd, commandMessage, 0, 0);
     } else {
-      drawText(lcd, rtc.dateStr("%02d.%02d.%04d"), 3, 0);  // date
+      drawText(lcd, rtc.dateStr("   %02d.%02d.%04d"), 0, 0);  // date
     }
 
 
