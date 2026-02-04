@@ -29,7 +29,8 @@ static Command commands[] = {
   { COMMAND_PIN_WATCH, commands_setStatus },
   { COMMAND_REBOOT, commands_setReboot },
   { COMMAND_HARDRESET, commands_setHardReset },
-  { COMMAND_UPDATE_TIME, commands_updateTime}
+  { COMMAND_UPDATE_TIME, commands_updateTime },
+  { COMMAND_SHOW_MESSAGE, commands_showMessage }
 };
 
 unsigned long lastPoll = 0;
@@ -93,7 +94,7 @@ static void handleCommandResult(const char* cmd, const char* param, const char* 
     log_i("command: %s; Param: %s; Status: %s\n", cmd, param, status);
   }
 
-  delay(100);
+  delay(50);
 
   if (globalOnResult)
     globalOnResult(cmd, param, status);  // sendResult(cmd, param, status);

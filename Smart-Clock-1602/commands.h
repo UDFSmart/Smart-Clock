@@ -18,9 +18,9 @@
 
 #pragma once
 #include <Arduino.h>
-// #include <ESP8266WiFi.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <sys/_timeval.h>
 
 #include <time.h>
 
@@ -37,9 +37,14 @@
 #define COMMAND_REBOOT "REBOOT"
 
 #define COMMAND_UPDATE_TIME "UPDATE_TIME"
+
+#define COMMAND_SHOW_MESSAGE "SHOW_MESSAGE"
 // End COMMAND LIST
 
 using CommandFunctionCallback = void (*)(const char* cmd, const char* param, const char* status);
+
+extern uint32_t endCommandMessageShowing;
+extern char commandMessage[16];
 
 // ======================== PUBLIC COMMANDS ======================== \\
 
@@ -58,3 +63,5 @@ void commands_setReboot(const char* param, CommandFunctionCallback callback);
 void commands_setHardReset(const char* param, CommandFunctionCallback callback);
 
 void commands_updateTime(const char* param, CommandFunctionCallback callback);
+
+void commands_showMessage(const char* param, CommandFunctionCallback callback);

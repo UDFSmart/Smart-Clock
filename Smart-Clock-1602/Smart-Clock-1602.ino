@@ -47,18 +47,6 @@ void setup() {
 
   initHttpRequest();
 
-  // configTime(0,  // 2 * 3600,
-  //            0,
-  //            "pool.ntp.org",
-  //            "time.nist.gov");
-
-  // drawText(lcd, "Updating time", 0, 0);
-
-  // struct tm timeinfo;
-  // while (!getLocalTime(&timeinfo)) {
-  //   delay(500);
-  // }
-
   lcd.clear();
 }
 
@@ -66,17 +54,25 @@ void loop() {
 
   static unsigned long lastDisplayUpdateMs = 0;
 
-  if (millis() - lastDisplayUpdateMs >= 1000) {
-    lastDisplayUpdateMs = millis();
+  unsigned long currentMillis = millis();
+
+  if (currentMillis - lastDisplayUpdateMs >= 1000) {
+    lastDisplayUpdateMs = currentMillis;
 
     rtc.update();  // calculate time
 
-    drawText(lcd, rtc.dateStr("%02d.%02d.%04d"), 3, 0);  // date
-    drawText(lcd, rtc.timeStr("%02d:%02d:%02d"), 4, 1);  // time
+    if ((long)(endCommandMessageShowing - currentMillis) > 0) {
+      drawText(lcd, commandMessage, 0, 0);
+    } else {
+      drawText(lcd, rtc.dateStr("%02d.%02d.%04d"), 3, 0);  // date
+    }
+
+
+    drawText(lcd, rtc.timeStr("%02d:%02d"), 5, 1);  // time
   }
 
-  if (millis() - lastPoll >= pollInterval) {
-    lastPoll = millis();
+  if (currentMillis - lastPoll >= pollInterval) {
+    lastPoll = currentMillis;
     pollServer();
   }
 }

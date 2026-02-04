@@ -18,4 +18,9 @@
 
 #pragma once
 
+#include <cstdint>
+#include <cstddef>
+
 void sanitizePath(char* s);
+
+bool parseMessageСommandParam(const char* param, char* message, size_t messageSize, uint32_t* durationMs);

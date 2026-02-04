@@ -23,9 +23,14 @@
 #include <esp_system.h>
 #include <nvs_flash.h>
 
+#include "string_utils.h"
+
 #define COMMAND_RESULT_SIZE 128
 
 #define RELAY_PIN_PARAM "0"
+
+uint32_t endCommandMessageShowing;
+char commandMessage[16];
 
 // =======================
 // Utils
@@ -147,25 +152,6 @@ void commands_setHardReset(const char* param, CommandFunctionCallback callback) 
 }
 
 void commands_updateTime(const char* param, CommandFunctionCallback callback) {
-
-  // configTime(0, 0, "pool.ntp.org", "time.nist.gov");
-
-  // struct tm timeinfo;
-  // while (!getLocalTime(&timeinfo)) {
-  //   delay(500);
-  // }
-
-  // time_t timestamp = (time_t)atoll(param);
-
-  // struct timeval tv;
-  // tv.tv_sec = timestamp;
-  // tv.tv_usec = 0;
-  // settimeofday(&tv, nullptr);
-
-  // if (callback) {
-  //   callback(COMMAND_UPDATE_TIME, param, "The time has been updated!");
-  // }
-
   if (param == nullptr || strlen(param) < 10) {
     if (callback) callback(COMMAND_UPDATE_TIME, param, "Error: Invalid timestamp");
     return;
@@ -176,16 +162,28 @@ void commands_updateTime(const char* param, CommandFunctionCallback callback) {
   struct timeval tv;
   tv.tv_sec = timestamp;
   tv.tv_usec = 0;
-  
+
   if (settimeofday(&tv, nullptr) == 0) {
-    tzset(); // Обновляем локальное окружение
+    tzset();  // Обновляем локальное окружение
     log_i("System time updated to: %lld", (long long)timestamp);
-    
-    if (callback) {
-      callback(COMMAND_UPDATE_TIME, param, "The time has been updated!");
-    }
+
+    if (callback) callback(COMMAND_UPDATE_TIME, param, "The time has been updated!");
   } else {
     if (callback) callback(COMMAND_UPDATE_TIME, param, "Error: System failed to set time");
   }
+}
 
+void commands_showMessage(const char* param, CommandFunctionCallback callback) {
+
+  uint32_t durationInSec;
+
+  if (sscanf(param, "%15[^|]|%lu", commandMessage, &durationInSec) == 2) {
+    log_i("commands_showMessage: [%s] [%ld sec]", commandMessage, (long)durationInSec);
+
+    endCommandMessageShowing = millis() + durationInSec * 1000UL;
+
+    if (callback) callback(COMMAND_SHOW_MESSAGE, param, "Message Showed!");
+  } else {
+    if (callback) callback(COMMAND_SHOW_MESSAGE, param, "Parsing error!");
+  }
 }
