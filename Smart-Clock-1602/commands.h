@@ -36,7 +36,7 @@
 using CommandFunctionCallback = void (*)(const char* cmd, const char* param, const char* status);
 
 extern uint32_t endCommandMessageShowing;
-extern char commandMessage[16];
+extern char commandMessage[17];
 
 // ======================== PUBLIC COMMANDS ======================== \\
 

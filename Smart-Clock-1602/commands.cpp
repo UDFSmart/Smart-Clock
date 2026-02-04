@@ -30,7 +30,7 @@
 #define RELAY_PIN_PARAM "0"
 
 uint32_t endCommandMessageShowing;
-char commandMessage[16];
+char commandMessage[17];
 
 
 // =======================
@@ -54,7 +54,7 @@ static void cmdHardReset(char* result, size_t resultSize, const char* param, Com
 
   delay(200);
 
-  nvs_flash_erase();  // стереть NVS (Wi-Fi, настройки)
+  nvs_flash_erase();  // erase NVS (Wi-Fi)
   nvs_flash_init();
 
   delay(200);
@@ -87,7 +87,7 @@ void commands_updateTime(const char* param, CommandFunctionCallback callback) {
   tv.tv_usec = 0;
 
   if (settimeofday(&tv, nullptr) == 0) {
-    tzset();  // Обновляем локальное окружение
+    tzset();
     log_i("System time updated to: %lld", (long long)timestamp);
 
     if (callback) callback(COMMAND_UPDATE_TIME, param, "The time has been updated!");
@@ -97,11 +97,17 @@ void commands_updateTime(const char* param, CommandFunctionCallback callback) {
 }
 
 void commands_showMessage(const char* param, CommandFunctionCallback callback) {
+  const char* sep = strchr(param, '|');
+  if (sep) {
+    size_t len = sep - param;
+    if (len >= sizeof(commandMessage)) len = sizeof(commandMessage) - 1;
 
-  uint32_t durationInSec;
+    memcpy(commandMessage, param, len);
+    commandMessage[len] = '\0';
 
-  if (sscanf(param, "%15[^|]|%lu", commandMessage, &durationInSec) == 2) {
-    log_i("commands_showMessage: [%s] [%ld sec]", commandMessage, (long)durationInSec);
+    uint32_t durationInSec = strtoul(sep + 1, nullptr, 10);
+
+    log_i("commands_showMessage: [%s] [%lu sec]", commandMessage, durationInSec);
 
     endCommandMessageShowing = millis() + durationInSec * 1000UL;
 
