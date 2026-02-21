@@ -29,15 +29,13 @@
 #define BASE_URL "https://smart.udfsoft.com/api/v1/devices/commands"
 #define GET_COMMAND_URL BASE_URL
 
-LiquidCrystal_I2C lcd(0x27, 16, 2);
 Clock rtc;
 
 void setup() {
   Serial.begin(115200);
+  delay(500);
 
-  Wire.begin(4, 5);
-  lcd.init();
-  lcd.backlight();
+  lcd_init();
 
   drawText(lcd, "Hello!", 0, 0, 2000);
   drawText(lcd, "This is your", 0, 0);

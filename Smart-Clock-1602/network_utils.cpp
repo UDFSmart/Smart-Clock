@@ -155,6 +155,11 @@ void network_SetHeader(HttpHeader& header, const char* name, const char* value) 
 void setupWifi(LiquidCrystal_I2C& lcd) {
   WiFiManager wm;
 
+  if (WiFi.macAddress() == "00:00:00:00:00:00") {
+    esp_wifi_set_mac(WIFI_IF_STA, customMAC);  // SETUP IN Config.h Sample: static const uint8_t customMAC[] = { 0xAC, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    delay(200);
+  }
+
   drawText(lcd, "WiFi Connecting", 0, 0);
 
   wm.setConnectTimeout(120);  // 2 mins

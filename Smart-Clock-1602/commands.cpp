@@ -1,3 +1,4 @@
+#include <cstring>
 /*
  *    Copyright 2025 UDFOwner
  *
@@ -24,6 +25,8 @@
 #include <nvs_flash.h>
 
 #include "string_utils.h"
+
+#include "lcd_utils.h"
 
 #define COMMAND_RESULT_SIZE 128
 
@@ -115,4 +118,14 @@ void commands_showMessage(const char* param, CommandFunctionCallback callback) {
   } else {
     if (callback) callback(COMMAND_SHOW_MESSAGE, param, "Parsing error!");
   }
+}
+
+void commands_setBacklight(const char* param, CommandFunctionCallback callback) {
+  if (param && strcmp(param, "1") == 0) {
+    lcd.backlight();
+  } else {
+    lcd.noBacklight();
+  }
+
+  if (callback) callback(COMMAND_SET_BACKLIGHT, param, "Successful");
 }

@@ -21,6 +21,10 @@
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 
+extern LiquidCrystal_I2C lcd;
+
+void lcd_init();
+
 void drawText(LiquidCrystal_I2C &lcd, const char* text, uint8_t col, uint8_t row);
 
 void drawText(LiquidCrystal_I2C &lcd, const String text, uint8_t col, uint8_t row);

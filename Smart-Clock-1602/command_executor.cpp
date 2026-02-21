@@ -25,7 +25,8 @@ static Command commands[] = {
   { COMMAND_REBOOT, commands_setReboot },
   { COMMAND_HARDRESET, commands_setHardReset },
   { COMMAND_UPDATE_TIME, commands_updateTime },
-  { COMMAND_SHOW_MESSAGE, commands_showMessage }
+  { COMMAND_SHOW_MESSAGE, commands_showMessage },
+  { COMMAND_SET_BACKLIGHT, commands_setBacklight }
 };
 
 unsigned long lastPoll = 0;

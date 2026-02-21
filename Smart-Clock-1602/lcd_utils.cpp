@@ -16,9 +16,17 @@
  *    More details: https://udfsoft.com/
  */
 
- #include "lcd_utils.h"
+#include "lcd_utils.h"
 
-void drawText(LiquidCrystal_I2C &lcd, const char* text, uint8_t col, uint8_t row) {
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+void lcd_init() {
+  Wire.begin(4, 5);
+  lcd.init();
+  lcd.backlight();
+}
+
+void drawText(LiquidCrystal_I2C &lcd, const char *text, uint8_t col, uint8_t row) {
   lcd.setCursor(col, row);
   lcd.print(text);  // Печатаем текст
 
@@ -38,7 +46,7 @@ void drawText(LiquidCrystal_I2C &lcd, const String text, uint8_t col, uint8_t ro
   }
 }
 
-void drawText(LiquidCrystal_I2C &lcd, const char* text, uint8_t col, uint8_t row, unsigned long delayMsec) {
+void drawText(LiquidCrystal_I2C &lcd, const char *text, uint8_t col, uint8_t row, unsigned long delayMsec) {
   drawText(lcd, text, col, row);
   delay(delayMsec);
 }

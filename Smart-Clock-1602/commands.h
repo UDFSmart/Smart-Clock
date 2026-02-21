@@ -31,6 +31,9 @@
 #define COMMAND_UPDATE_TIME "UPDATE_TIME"
 
 #define COMMAND_SHOW_MESSAGE "SHOW_MESSAGE"
+
+#define COMMAND_SET_BACKLIGHT "SET_BACKLIGHT"
+
 // End COMMAND LIST
 
 using CommandFunctionCallback = void (*)(const char* cmd, const char* param, const char* status);
@@ -54,3 +57,5 @@ void commands_setHardReset(const char* param, CommandFunctionCallback callback);
 void commands_updateTime(const char* param, CommandFunctionCallback callback);
 
 void commands_showMessage(const char* param, CommandFunctionCallback callback);
+
+void commands_setBacklight(const char* param, CommandFunctionCallback callback);
