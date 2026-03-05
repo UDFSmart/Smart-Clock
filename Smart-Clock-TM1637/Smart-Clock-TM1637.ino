@@ -17,12 +17,15 @@
  */
 
 #include "config.h"
+#include "post_codes.h"
 
 #include "network_utils.h"
 #include "string_utils.h"
 #include "command_executor.h"
 
 #include "Clock.h"
+
+#include "IntNotification.h"
 
 #include "tm1637_display_utils.h"
 
@@ -31,21 +34,21 @@
 
 Clock rtc;
 
+IntNotification notification;
+
 void setup() {
   Serial.begin(115200);
   delay(500);
 
   tm1637_init();
-
-  display.showNumberDec(8001);
+  display.showNumberDec(POST_TM1637_INITIALIZED);
 
   setupWifi(display);
 
-  display.showNumberDec(8002);
-
   initHttpRequest();
 
-  display.showNumberDec(8003);
+  display.showNumberDec(POST_OK);
+  delay(1000);
   display.clear();
 }
 
@@ -60,17 +63,18 @@ void loop() {
     lastDisplayUpdateMs = currentMillis;
     colonState = !colonState;
 
-    rtc.update();  // calculate time
+    rtc.update();
 
     int hours = rtc.hour();
     int minutes = rtc.minute();
 
-    int timeValue = hours * 100 + minutes;
-
-    if (colonState) {
-      display.showNumberDecEx(timeValue, 0b01000000, true);
+    if (notification.hasNotification(currentMillis)) {
+      display.showNumberDec(notification.getMessage());
     } else {
-      display.showNumberDecEx(timeValue, 0, true);
+      int timeValue = hours * 100 + minutes;
+      uint8_t dots = colonState ? 0b01000000 : 0;
+
+      display.showNumberDecEx(timeValue, dots, true);
     }
   }
 
@@ -82,8 +86,10 @@ void loop() {
 
 void pollServer() {
   if (WiFi.status() != WL_CONNECTED) {
+    
     log_i("Reconnecting WiFi...");
-    display.showNumberDec(8801);
+    notification.setMessage(POST_WIFI_CONNECTION_LOST, 3000);
+
     WiFi.reconnect();
     return;
   }
@@ -97,8 +103,6 @@ void pollServer() {
   processHttpRequest(GET_COMMAND_URL, "GET", nullptr, nullptr, 0, collectHeaders, 3, 15000, [](int code, const HttpHeader* headers, size_t count) {
     log_i("HTTPS Response code: %u", code);
 
-    // display.showNumberDec(code);
-
     switch (code) {
       case HTTP_CODE_NO_CONTENT:
         command_executor_handleCommandRequest(headers, count, sendCommandResult);
@@ -108,17 +112,21 @@ void pollServer() {
         break;
       case HTTP_CODE_FORBIDDEN:
         log_e("Access Forbidden! DEVICE_ID not found or API_KEY not valid");
+        notification.setMessage(POST_RESPONSE_DEVICE_ID_OR_API_KEY_NOT_FOUND, 10000);
         break;
       default:
         log_e("Unexpected code: %d", code);
+        notification.setMessage(POST_RESPONSE_UNEXPECTED_CODE + code, 5000);
     }
   });
 }
 
 void sendCommandResult(const char* cmd, const char* param, const char* status) {
   if (WiFi.status() != WL_CONNECTED) {
+    
     log_i("sendResult: WiFi.status() != WL_CONNECTED");
-    display.showNumberDec(8802);
+    notification.setMessage(POST_WIFI_CONNECTION_LOST, 3000);
+
     return;
   }
 

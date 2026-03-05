@@ -18,14 +18,17 @@
 
 #pragma once
 
-#define DEVICE_ID "xxxx-xxxx-xxxx-xxxx-xxxx"  // YOUR DEVICE ID, to get it write to us: support@udfsoft.com
+enum PostCode {
+  POST_TM1637_INITIALIZED = 8000,
 
-#define DEVICE_TYPE "clock-tm1637"         // type of your device
-#define DEVICE_CONTROLLER_TYPE "esp32-c3"  // type of your device
+  POST_EMPTY_MAC_ADDRESS = 8100,
+  POST_WIFI_CONNECTING,
+  POST_WIFI_CONNECTION_FAILED,
+  POST_WIFI_CONNECTED,
+  POST_WIFI_CONNECTION_LOST,
 
-
-#define API_KEY "XXXXXXXXXXXXXXXXXX"  // YOUR API Key, to get it write to us: support@udfsoft.com
-
-#define APP_VERSION "1"
-
-static const uint8_t customMAC[] = { 0xAC, 0x00, 0x00, 0x00, 0x00, 0x00 };
+  POST_RESPONSE_DEVICE_ID_OR_API_KEY_NOT_FOUND = 8201,
+  POST_RESPONSE_UNEXPECTED_CODE = 9000,
+  
+  POST_OK = 8888,
+};
