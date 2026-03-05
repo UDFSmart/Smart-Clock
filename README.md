@@ -91,6 +91,8 @@ The device processes commands received in the X-CMD HTTP header:
 
 ## Photos
 
+### 1602
+
 <img src="Smart-Clock-1602/photos/photo_2026-02-22_13-36-16.jpg" alt="Device preview" width="400">
 <img src="Smart-Clock-1602/photos/photo_2026-02-20_02-44-16.jpg" alt="Device preview" width="400">
 <img src="Smart-Clock-1602/photos/photo_2026-02-22_13-04-21.jpg" alt="Device preview" width="400">
@@ -100,6 +102,14 @@ The device processes commands received in the X-CMD HTTP header:
 <img src="Smart-Clock-1602/photos/IMG_20260202_011451.jpg" alt="Device preview" width="400">
 <img src="Smart-Clock-1602/photos/IMG_20260202_141023.jpg" alt="Device preview" width="400">
 <img src="Smart-Clock-1602/photos/IMG_20260204_184135.jpg" alt="Device preview" width="400">
+
+### TM1637
+
+<img src="Smart-Clock-TM1637/photos/IMG_20260305_172936.jpg" alt="Device preview" width="400">
+<img src="Smart-Clock-TM1637/photos/IMG_20260305_173008.jpg" alt="Device preview" width="400">
+<img src="Smart-Clock-TM1637/photos/IMG_20260305_172951.jpg" alt="Device preview" width="400">
+<img src="Smart-Clock-TM1637/photos/IMG_20260305_174023.jpg" alt="Device preview" width="400">
+<img src="Smart-Clock-TM1637/photos/IMG_20260305_175409.jpg" alt="Device preview" width="400">
 
 ---
 
