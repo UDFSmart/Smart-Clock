@@ -4,6 +4,12 @@
 The project is designed with a focus on autonomy, remote control, and easy integration into a smart home ecosystem.
 ---
 
+## Supported devices
+
+**LCD1602** ([EN](https://github.com/UDFSmart/Smart-Clock/blob/main/Smart-Clock-1602/docs/README_EN.md) || [RU](https://github.com/UDFSmart/Smart-Clock/blob/main/Smart-Clock-1602/docs/README_RU.md))
+
+**TM1637**
+
 ## ✨ Key Features
 * 📅 Time & Date Display: Automatic time synchronization with the server.
 * 📩 Messaging System: Ability to display custom text on the screen via API (using the SHOW_MESSAGE command).
@@ -37,7 +43,6 @@ To compile the project, you need PlatformIO or Arduino IDE with the following li
 
   * LiquidCrystal_I2C
   * WiFiManager
-  * ArduinoJson (optional, dependent on future extensions)
   * Standard ESP32 libraries (WiFi, HTTPClient, WiFiClientSecure).
 
 2. **Configuration (config.h)**
