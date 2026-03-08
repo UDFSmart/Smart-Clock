@@ -10,11 +10,11 @@
 
 ## Фотографии
 
-<img src="Smart-Clock-1602/photos/photo_2026-02-22_13-36-16.jpg" alt="Device preview" width="400">
-<img src="Smart-Clock-1602/photos/photo_2026-02-20_02-44-16.jpg" alt="Device preview" width="400">
-<img src="Smart-Clock-1602/photos/photo_2026-02-22_13-04-21.jpg" alt="Device preview" width="400">
-<img src="Smart-Clock-1602/photos/photo_2026-02-20_02-44-15.jpg" alt="Device preview" width="400">
-<img src="Smart-Clock-1602/photos/photo_2026-02-20_02-44-14.jpg" alt="Device preview" width="400">
+<img src="/Smart-Clock-1602/photos/photo_2026-02-22_13-36-16.jpg" alt="Device preview" width="400">
+<img src="/Smart-Clock-1602/photos/photo_2026-02-20_02-44-16.jpg" alt="Device preview" width="400">
+<img src="/Smart-Clock-1602/photos/photo_2026-02-22_13-04-21.jpg" alt="Device preview" width="400">
+<img src="/Smart-Clock-1602/photos/photo_2026-02-20_02-44-15.jpg" alt="Device preview" width="400">
+<img src="/Smart-Clock-1602/photos/photo_2026-02-20_02-44-14.jpg" alt="Device preview" width="400">
 
 ---
 ---
