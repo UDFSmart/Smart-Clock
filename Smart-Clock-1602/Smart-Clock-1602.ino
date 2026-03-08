@@ -37,13 +37,19 @@ void setup() {
 
   lcd_init();
 
-  drawText(lcd, "Hello!", 0, 0, 2000);
-  drawText(lcd, "This is your", 0, 0);
-  drawText(lcd, "Smartclock", 0, 1, 3000);
+  printPostCode(lcd, POST_TM1637_INITIALIZED, 0, 0, 1000);
 
   setupWifi(lcd);
 
   initHttpRequest();
+
+  printPostCode(lcd, POST_OK, 0, 0, 1000);
+
+  lcd.clear();
+
+  drawText(lcd, "Hello!", 0, 0, 2000);
+  drawText(lcd, "This is your", 0, 0);
+  drawText(lcd, "Smartclock", 0, 1, 3000);
 
   lcd.clear();
 }
@@ -52,6 +58,8 @@ void loop() {
 
   static unsigned long lastDisplayUpdateMs = 0;
 
+  static uint16_t scrollPos = 0;
+
   unsigned long currentMillis = millis();
 
   if (currentMillis - lastDisplayUpdateMs >= 1000) {
@@ -59,12 +67,12 @@ void loop() {
 
     rtc.update();  // calculate time
 
-    if ((long)(endCommandMessageShowing - currentMillis) > 0) {
-      drawText(lcd, commandMessage, 0, 0);
+    if (notification.hasNotification(currentMillis)) {
+      drawScrollText(lcd, notification.getMessage(), 0, 0, scrollPos);
     } else {
-      drawText(lcd, rtc.dateStr("   %02d.%02d.%04d"), 0, 0);  // date
+      scrollPos = 0;
+      drawText(lcd, rtc.dateStr("   %02d.%02d.%04d"), 0, 0);
     }
-
 
     drawText(lcd, rtc.timeStr("%02d:%02d"), 5, 1);  // time
   }
@@ -78,7 +86,8 @@ void loop() {
 void pollServer() {
   if (WiFi.status() != WL_CONNECTED) {
     log_i("Reconnecting WiFi...");
-    drawText(lcd, "Reconnecting...", 0, 0, 1000);
+    notification.setPostCodeMessage(POST_WIFI_CONNECTION_LOST, 3000);
+
     WiFi.reconnect();
     return;
   }
@@ -101,9 +110,11 @@ void pollServer() {
         break;
       case HTTP_CODE_FORBIDDEN:
         log_e("Access Forbidden! DEVICE_ID not found or API_KEY not valid");
+        notification.setPostCodeMessage(POST_RESPONSE_DEVICE_ID_OR_API_KEY_NOT_FOUND, 10000);
         break;
       default:
         log_e("Unexpected code: %d", code);
+        notification.setNumberMessage(POST_RESPONSE_UNEXPECTED_CODE + code, 5000);
     }
   });
 }
@@ -111,6 +122,8 @@ void pollServer() {
 void sendCommandResult(const char* cmd, const char* param, const char* status) {
   if (WiFi.status() != WL_CONNECTED) {
     log_i("sendResult: WiFi.status() != WL_CONNECTED");
+    notification.setPostCodeMessage(POST_WIFI_CONNECTION_LOST, 3000);
+
     return;
   }
 

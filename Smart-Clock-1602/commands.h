@@ -38,9 +38,6 @@
 
 using CommandFunctionCallback = void (*)(const char* cmd, const char* param, const char* status);
 
-extern uint32_t endCommandMessageShowing;
-extern char commandMessage[17];
-
 // ======================== PUBLIC COMMANDS ======================== \\
 
 void commands_setPinState(char* result, size_t resultSize, const char* param, int state);

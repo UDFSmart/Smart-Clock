@@ -58,7 +58,7 @@ void command_executor_execute(const char* cmd, const char* param, CommandFunctio
 
 void command_executor_handleCommandRequest(const HttpHeader* headers, size_t headersCount, OnResultCommandFunction onResultFunc) {
   char cmd[32] = { 0 };
-  char param[32] = { 0 };
+  char param[HEADER_VALUE_LEN] = { 0 };
 
   for (size_t i = 0; i < headersCount; i++) {
     const char* name = headers[i].name;

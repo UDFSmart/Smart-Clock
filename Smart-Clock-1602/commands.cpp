@@ -32,9 +32,6 @@
 
 #define RELAY_PIN_PARAM "0"
 
-uint32_t endCommandMessageShowing;
-char commandMessage[17];
-
 
 // =======================
 // Private Commands
@@ -100,19 +97,20 @@ void commands_updateTime(const char* param, CommandFunctionCallback callback) {
 }
 
 void commands_showMessage(const char* param, CommandFunctionCallback callback) {
+
   const char* sep = strchr(param, '|');
   if (sep) {
     size_t len = sep - param;
-    if (len >= sizeof(commandMessage)) len = sizeof(commandMessage) - 1;
 
-    memcpy(commandMessage, param, len);
-    commandMessage[len] = '\0';
+    char tempMsg[128];
+    if (len >= sizeof(tempMsg)) len = sizeof(tempMsg) - 1;
+
+    memcpy(tempMsg, param, len);
+    tempMsg[len] = '\0';
 
     uint32_t durationInSec = strtoul(sep + 1, nullptr, 10);
 
-    log_i("commands_showMessage: [%s] [%lu sec]", commandMessage, durationInSec);
-
-    endCommandMessageShowing = millis() + durationInSec * 1000UL;
+    notification.setMessage(tempMsg, durationInSec * 1000UL);
 
     if (callback) callback(COMMAND_SHOW_MESSAGE, param, "Message Showed!");
   } else {

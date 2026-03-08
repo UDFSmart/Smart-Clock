@@ -28,7 +28,7 @@
 #include "lcd_utils.h"
 
 #define HEADER_NAME_LEN 32
-#define HEADER_VALUE_LEN 64
+#define HEADER_VALUE_LEN 128
 
 // HEADERS NAMES
 #define X_POLL_INTERVAL "X-POLL-INTERVAL"

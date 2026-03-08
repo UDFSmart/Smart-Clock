@@ -156,11 +156,12 @@ void setupWifi(LiquidCrystal_I2C& lcd) {
   WiFiManager wm;
 
   if (WiFi.macAddress() == "00:00:00:00:00:00") {
+    printPostCode(lcd, POST_EMPTY_MAC_ADDRESS, 0, 0, 1);
     esp_wifi_set_mac(WIFI_IF_STA, customMAC);  // SETUP IN Config.h Sample: static const uint8_t customMAC[] = { 0xAC, 0x00, 0x00, 0x00, 0x00, 0x00 };
     delay(200);
   }
 
-  drawText(lcd, "WiFi Connecting", 0, 0);
+  printPostCode(lcd, POST_WIFI_CONNECTING, 0, 0, 1);
 
   wm.setConnectTimeout(120);  // 2 mins
   wm.setConfigPortalTimeout(300);
@@ -169,13 +170,14 @@ void setupWifi(LiquidCrystal_I2C& lcd) {
   if (!wm.autoConnect("SMART_CLOCK_AP", "12345678")) {
 
     log_i("Failed to connect, rebooting...");
-    drawText(lcd, "Failed to connect", 0, 0);
-    drawText(lcd, "rebooting...", 0, 0, 2000);
+
+    printPostCode(lcd, POST_WIFI_CONNECTION_FAILED, 0, 0, 2000);
 
     ESP.restart();
   }
 
-  drawText(lcd, "WiFi Connected!", 0, 0);
+  printPostCode(lcd, POST_WIFI_CONNECTED, 0, 0, 1);
+
   drawText(lcd, WiFi.localIP().toString().c_str(), 0, 1, 2000);
 
   log_i("Connected to WiFi!/nIP: %s", WiFi.localIP().toString().c_str());

@@ -17,26 +17,24 @@
  */
 
 #pragma once
-
-#include <LiquidCrystal_I2C.h>
-#include <Wire.h>
-
-#include "MessageNotification.h"
-
+#include <Arduino.h>
 #include "post_codes.h"
 
-extern LiquidCrystal_I2C lcd;
+class MessageNotification {
+public:
+  MessageNotification();
 
-extern MessageNotification notification;
+  void setMessage(const char* notification, unsigned long delay);
 
-void lcd_init();
+  void setPostCodeMessage(PostCode code, unsigned long delay);
 
-void drawText(LiquidCrystal_I2C &lcd, const char *text, uint8_t col, uint8_t row);
+  void setNumberMessage(int number, unsigned long delay);
 
-void drawText(LiquidCrystal_I2C &lcd, const String text, uint8_t col, uint8_t row);
+  bool hasNotification(unsigned long currentMillis) const;
 
-void drawText(LiquidCrystal_I2C &lcd, const char *text, uint8_t col, uint8_t row, unsigned long delayMsec);
+  const char* getMessage() const;
 
-void printPostCode(LiquidCrystal_I2C &lcd, int code, uint8_t col, uint8_t row, unsigned long delayMsec);
-
-void drawScrollText(LiquidCrystal_I2C &lcd, const char *text, uint8_t col, uint8_t row, uint16_t &pos);
+private:
+  char _buffer[64];
+  uint32_t notificationExpireTime;
+};
