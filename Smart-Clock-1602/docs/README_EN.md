@@ -27,8 +27,6 @@ The project is designed with a focus on autonomy, remote control, and easy integ
 
 ---
 
-## Compiling and Uploading the Firmware
-
 ### Requirements
 ### Hardware
 * ESP32-C3
@@ -37,6 +35,64 @@ The project is designed with a focus on autonomy, remote control, and easy integ
 ### Software
 * Arduino IDE 2.3.8 or higher
 * WiFiManager (tzapu)
+* LiquidCrystal_I2C
+* WiFiManager
+* Standard ESP32 libraries (WiFi, HTTPClient, WiFiClientSecure).
+
+---
+
+## 🛠 Hardware & Wiring
+The project is configured for the following hardware (based on the source code):
+
+  * Microcontroller: ESP32-C3 (or compatible ESP32 board).
+  * Display: LCD 1602 with I2C module (Address 0x27).
+
+Wiring Diagram (I2C):
+
+| LCD 1602  |	ESP32-C3 (GPIO) |
+| --------- | --------------- |
+| SDA	      | GPIO 4          |
+| SCL	      | GPIO 5          |
+| VCC	      | 5V / 3.3V       |
+| GND	      | GND             |
+
+_Note: I2C pins are initialized in main.cpp as: Wire.begin(4, 5);._
+---
+
+## ⚙️ Installation & Configuration
+
+1. **Dependencies**
+To compile the project, you need PlatformIO or Arduino IDE with the following libraries installed:
+
+  * LiquidCrystal_I2C
+  * WiFiManager
+  * Standard ESP32 libraries (WiFi, HTTPClient, WiFiClientSecure).
+
+2. **Configuration (config.h)**
+
+Before flashing, you must edit the config.h file to include your unique credentials.
+
+```cpp
+// config.h
+
+#pragma once
+
+#define DEVICE_ID "xxxx-xxxx-xxxx-xxxx"    // YOUR DEVICE ID, to get it write to us: support@udfsoft.com
+
+#define DEVICE_TYPE "clock"                // type of your device
+#define DEVICE_CONTROLLER_TYPE "esp32-c3"  // type of your device
+
+
+#define API_KEY "xxxxxxxxxxxxxxxxxxxxxx"  // YOUR API Key, to get it write to us: support@udfsoft.com
+
+#define APP_VERSION "1"
+
+static const uint8_t customMAC[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }; // if needed!
+```
+
+ℹ️ How to get keys? To obtain your DEVICE_ID and API_KEY, please contact support: support@udfsoft.com.
+---
+
 
 
 ```Smart-Clock-1602.ino``` - Entry Point
