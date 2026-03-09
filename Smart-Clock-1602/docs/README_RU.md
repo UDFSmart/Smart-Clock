@@ -20,7 +20,7 @@
 
 ## Схема подключения
 
-<img src="Smart-Clock-1602/photos/wiring_diagram.jpg" alt="Device preview" width="400">
+<img src="/Smart-Clock-1602/photos/wiring_diagram.jpg" alt="Device preview" width="400">
 
 ---
 

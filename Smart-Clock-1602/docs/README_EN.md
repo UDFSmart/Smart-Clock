@@ -19,6 +19,12 @@ The project is designed with a focus on autonomy, remote control, and easy integ
 
 ---
 
+## Wiring Diagram
+
+<img src="/Smart-Clock-1602/photos/wiring_diagram.jpg" alt="Device preview" width="400">
+
+---
+
 ## 3D Models
 
 [Table Clock](https://www.crealitycloud.com/ru/model-detail/699a4d285a776968b630fd7a)
