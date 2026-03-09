@@ -18,6 +18,12 @@
 
 ---
 
+## Схема подключения
+
+<img src="Smart-Clock-1602/photos/wiring_diagram.jpg" alt="Device preview" width="400">
+
+---
+
 ## 3D-модели
 
 [Настольные часы](https://www.crealitycloud.com/ru/model-detail/699a4d285a776968b630fd7a)
